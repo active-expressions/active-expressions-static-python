@@ -218,7 +218,7 @@ def aexpr(lambda_expression, globalvars, localvars=None):
 
         while instruction_queue:
             inst = instruction_queue.popleft()
-            # print(instruction)
+            # print(inst)
             if opcode_handler[inst.opcode] != None:
                 opcode_handler[inst.opcode](inst, instruction_queue, object_stack, variable_mapping)
             else:
