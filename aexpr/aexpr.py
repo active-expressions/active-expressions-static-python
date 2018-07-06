@@ -2,7 +2,7 @@ import dis
 from collections import deque
 import inspect
 
-class ExpressionReaction(object):
+class ExpressionReaction:
     def __init__(self, expression_to_monitor):
         self.expression_to_monitor = expression_to_monitor
         self.old_value = expression_to_monitor()
@@ -20,7 +20,7 @@ class ExpressionReaction(object):
 class UnimplementedInstructionException(Exception):
     pass
 
-class ObjectWrapper(object):
+class ObjectWrapper:
     def __init__(self, obj=None, base_obj=None, placeholder=False, buildin=False):
         self.obj = obj
         self.base_obj = base_obj
@@ -73,9 +73,10 @@ def aexpr(lambda_expression, globalvars, localvars=None):
             return func
         return inner
     ignore = lambda inst, iq, os, vm: None
+    pop_os_one = lambda inst, iq, os, vm: os.pop()
 
     opcode(0, 0)(ignore)
-    opcode(1, 1)(lambda inst, iq, os, vm: os.pop())
+    opcode(1, 1)(pop_os_one)
 
     @opcode(2, 2)
     def rot_two_handler(inst, iq, os, vm):
@@ -135,7 +136,7 @@ def aexpr(lambda_expression, globalvars, localvars=None):
     opcode(80, 80)(ignore)
     opcode(83, 83)(ignore)
     opcode(87, 87)(ignore)
-    opcode(93, 93)(ignore)
+    opcode(93, 93)(pop_os_one)
     opcode(100, 100)(lambda inst, iq, os, vm: os.append(ObjectWrapper(placeholder=True)))
 
     @opcode(106, 106)
