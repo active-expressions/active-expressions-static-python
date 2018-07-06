@@ -3,6 +3,9 @@ from collections import deque
 import inspect
 
 class ExpressionReaction:
+    """An Expression Reaction object will be called when a change is detected.
+    Define the action with on_change(expression)."""
+
     def __init__(self, expression_to_monitor):
         self.expression_to_monitor = expression_to_monitor
         self.old_value = expression_to_monitor()
@@ -18,9 +21,16 @@ class ExpressionReaction:
             self.old_value = new_value
 
 class UnimplementedInstructionException(Exception):
+    """An UnimplementedInstructionException will be thrown when
+    the analysis try to process an unknown byte-code."""
+
     pass
 
 class ObjectWrapper:
+    """Wraps an object on the object stack. Can be a placeholder,
+    a buildin or a simple object. If it an attribute of another object,
+    base_obj will contains the original object."""
+
     def __init__(self, obj=None, base_obj=None, placeholder=False, buildin=False):
         self.obj = obj
         self.base_obj = base_obj
@@ -34,6 +44,9 @@ class ObjectWrapper:
         return self.buildin
 
 def placeaexpr(obj, attr_name, expression_reaction_object):
+    """placeaexpr will be called by the byte-code analysis
+    when an instrumentable attribute is found."""
+
     if not hasattr(obj, '__listenon__'):
         if not hasattr(type(obj), "__aexprhandler__"):
             original = type(obj).__setattr__
@@ -57,6 +70,11 @@ def placeaexpr(obj, attr_name, expression_reaction_object):
 
 
 def aexpr(lambda_expression, globalvars, localvars=None):
+    """aexpr performs the byte-code analysis to find all
+    dependencies of the given expression. It places hooks on these dependencies.
+    When one of these hooks is triggered, an ExpressionReaction will be executed.
+    The method returns the ExpressionReaction which were created during this execution."""
+
     expression_reaction_object = ExpressionReaction(lambda_expression)
 
     #####
