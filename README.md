@@ -142,7 +142,7 @@ This library has the few following limitations. Feel free to contribute and fix 
  - **Local Variables:** Local Variables are not instrumentable since they do not have a `__setattr__` or something else. Only fields of objects are instrumentable.
  - **External Resources:** Monitoring if a server is available or a file exists would require to poll this information repeatedly. This is not supported.
  - **Transactions:** Each time a dependency changes all triggers are triggered. Its not possible to pause this to change more attributes at once.
- - **Other language features:** Not supported are for examples *exceptions* and *closures**; *concurreny*, *asynchrony* and *meta-programming* can cause issues as well.
+ - **Other language features:** Not supported are for examples *exceptions* and *closures*; *concurreny*, *asynchrony* and *meta-programming* can cause issues as well.
 
 You can find some code examples for some of them in the [presentation](https://github.com/active-expressions/active-expressions-static-python/blob/master/presentation/presentation.pdf).
 
