@@ -134,6 +134,12 @@ See the contribution section if you want to increase this number ;)
 
 The full example for this analysis is shown in the [presentation](https://github.com/active-expressions/active-expressions-static-python/blob/master/presentation/presentation.pdf).
 
+### Alternative Implementation Strategies
+
+- https://docs.python.org/3/library/functions.html#eval
+- https://docs.python.org/3/library/functions.html#exec
+- https://docs.python.org/3/library/sys.html
+
 ## Limitations
 
 This library has the few following limitations. Feel free to contribute and fix these limitations:
