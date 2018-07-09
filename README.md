@@ -94,11 +94,11 @@ aexpr(lambda: tmp.method())
 The dependencies are `self.f` and `self.g` (from object `tmp`).
 To be able to monitor the dependencies of the expression, we have to find them first.
 
-## Step 1: Find the dependencies
+### Step 1: Find the dependencies
 
 Therefore this library performs a static byte-code analysis of the expression and all nested methods.
 It converts the binary byte-code of the expression and all nested methods with the library [`dis`](https://docs.python.org/2/library/dis.html).
-Afterwards it simulates an object-stack and an own variable mapping and processes all byte-code instruction itself.
+Afterwards it simulates an object-stack and an own variable mapping and processes all byte-code instructions itself.
 
 **Short Example** (the complete one is in the [presentation](https://github.com/active-expressions/active-expressions-static-python/blob/master/presentation/presentation.pdf)):
 ```
@@ -122,10 +122,10 @@ An addition for example only takes two elements from the object stack and pushes
 A multiplication does the same.
 Thats the reason why all elements on our own object stack are wrapped in an [ObjectWrapper](https://github.com/active-expressions/active-expressions-static-python/blob/master/aexpr/aexpr.py#L29), which can be an real object or a placeholder.
 
-## Step 2: Monitor the dependencies
+### Step 2: Monitor the dependencies
 
 When we found the dependencies we have to monitor them to be able to trigger if something changes.
-For all dependencies (attribute of a object) we modify the `__setattr__`-method of the object, which will be called when setting a attribute of that object.
+For all dependencies (fields of a object) we modify the `__setattr__`-method of the object, which will be called when setting a attribute of that object.
 We install a hook in that `__setattr__`-method which checks if we monitor that specific attribute and calls all triggers if so.
 The [method `placeaexpr`](https://github.com/active-expressions/active-expressions-static-python/blob/master/aexpr/aexpr.py#L46) installs these hooks.
 
@@ -144,22 +144,23 @@ The full example for this analysis is shown in the [presentation](https://github
 
 This library has the few following limitations. Feel free to contribute and fix these limitations:
 
- - **Lists, Sets, Maps:** Datastructures are not supported so far. Means if you store a dependency in a list and access the an attribute later, you can not monitor on that attribute.
+ - **Lists, Sets, Maps:** Datastructures are not supported so far. Means if you store a dependency in a list and access an attribute later, you can not monitor on that attribute.
  - **Local Variables:** Local Variables are not instrumentable since they do not have a `__setattr__` or something else. Only fields of objects are instrumentable.
  - **External Resources:** Monitoring if a server is available or a file exists would require to poll this information repeatedly. This is not supported.
  - **Transactions:** Each time a dependency changes all triggers are triggered. Its not possible to pause this to change more attributes at once.
- - **Other language features:** Not supported are for examples *exceptions* and *closures*; *concurreny*, *asynchrony* and *meta-programming* can cause issues as well.
+ - **Other language features:** Not supported are for examples *exceptions* and *closures*; *concurrency*, *asynchrony* and *meta-programming* can cause issues as well.
 
 You can find some code examples for some of them in the [presentation](https://github.com/active-expressions/active-expressions-static-python/blob/master/presentation/presentation.pdf).
 
 ## Contribution
 
 If you have some complex expression to monitor it can happen that you get an `UnimplementedInstructionException`.
-This means that you try to perform an instruction which is not so far supported.
+This means that you try to process an instruction which is so far not supported.
 Afterwards you see the unsupported byte-code-instruction.
-Feel free to create pull request to this repository to support that instruction.
+Feel free to create pull requests to this repository to support unknown instructions.
 
 To support a new instruction you have to modify the content of the `aexpr`-method.
 Call the method `opcode` once with the new supported op-codes of the instruction and call the result with a method which performs the required actions.
 Therefore you get the instruction, the rest of the instruction queue, the object stack and the variable mapping as parameters.
 There are already a lot of examples for this in this method.
+You can find an overview over all opcodes [here](http://unpyc.sourceforge.net/Opcodes.html).
