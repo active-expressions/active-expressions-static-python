@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/active-expressions-static-python.iml" filepath="$PROJECT_DIR$/.idea/active-expressions-static-python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dasylab-testbed/.idea/dasylab-testbed.iml" filepath="$PROJECT_DIR$/../dasylab-testbed/.idea/dasylab-testbed.iml" />
+      <module fileurl="file://$USER_HOME$/source/ns-3.29/.idea/ns-3.29.iml" filepath="$USER_HOME$/source/ns-3.29/.idea/ns-3.29.iml" />
+    </modules>
+  </component>
+</project>

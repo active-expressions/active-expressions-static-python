@@ -1,6 +1,11 @@
 import dis
 from collections import deque
 import inspect
+import re
+import sys
+if sys.version_info < (3, .0):
+    from StringIO import StringIO
+
 
 class ExpressionReaction:
     """An Expression Reaction object will be called when a change is detected.
@@ -43,9 +48,18 @@ class ObjectWrapper:
     def is_build_in(self):
         return self.buildin
 
+def is_new_style(cls):
+    """Checks if a class is a new style class.
+    See: https://stackoverflow.com/questions/2654622/identifying-that-a-variable-is-a-new-style-class-in-python"""
+    return hasattr(cls, '__class__') and ('__dict__' in dir(cls) or hasattr(cls, '__slots__'))
+
+
 def placeaexpr(obj, attr_name, expression_reaction_object):
     """placeaexpr will be called by the byte-code analysis
     when an instrumentable attribute is found."""
+
+    if not is_new_style(obj):
+        raise ValueError('You have to use new style classes')
 
     if not hasattr(obj, '__listenon__'):
         if not hasattr(type(obj), "__aexprhandler__"):
@@ -201,7 +215,7 @@ def aexpr(lambda_expression, globalvars, localvars=None):
                 for i in range(inst.argval, 0, -1):
                     localvars[params.args[i]] = func_args[i-1]
 
-                os.append(process_function(func.__code__, wrapper.base_obj, localvars))
+                os.append(process_function(func, wrapper.base_obj, localvars))
         else:
             os.append(ObjectWrapper(placeholder=True))
 
@@ -220,7 +234,7 @@ def aexpr(lambda_expression, globalvars, localvars=None):
             print("Warning: Access to Placeholder isn't supported (Instruction: " + str(inst) + ")")
         return wrapper.obj
 
-    def process_function(function_code, self, localvars=None):
+    def process_function(function, self, localvars=None):
         instruction_queue = deque()
         object_stack = []
         variable_mapping = {}
@@ -233,7 +247,16 @@ def aexpr(lambda_expression, globalvars, localvars=None):
         if "self" not in variable_mapping:
             variable_mapping["self"] = ObjectWrapper(obj=self)
 
-        instruction_queue.extend(dis.get_instructions(function_code))
+        if sys.version_info > (3, 0):
+            instruction_queue.extend(dis.get_instructions(function.__code__))
+        else:
+            old_stdout = sys.stdout
+            result = StringIO()
+            sys.stdout = result
+            dis.dis(function)
+            sys.stdout = old_stdout
+            result_string = result.getvalue()
+            instruction_queue.extend([Instruction.get_instruction_from_string(s) for s in result_string.splitlines()])
 
         while instruction_queue:
             inst = instruction_queue.popleft()
@@ -244,6 +267,26 @@ def aexpr(lambda_expression, globalvars, localvars=None):
                 raise UnimplementedInstructionException("Unimplemented Instruction: " + str(inst))
         return object_stack.pop()
 
-    process_function(lambda_expression.__code__, None, localvars)
+    process_function(lambda_expression, None, localvars)
 
     return expression_reaction_object
+
+class Instruction:
+    def __init__(self, opcode, argval):
+        self.opcode = opcode
+        self.argval = argval
+
+    def __str__(self):
+        return str(self.opcode) + " " + str(self.argval)
+
+    @staticmethod
+    def get_instruction_from_string(line):
+        splits = line.strip().split("(")
+        value = ""
+        if len(splits) == 2:  # Has a value
+            value = splits[1].replace(")", "")
+        instruction = re.sub(r"\d", "", splits[0]).strip()
+        if instruction not in dis.opmap:
+            return None
+        opcode = dis.opmap[instruction]
+        return Instruction(opcode, value)
