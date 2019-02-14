@@ -4,10 +4,11 @@ Active Expression Implementation for Python using static-byte-code analysis.
 
 ## Installation
 
-To use Active Expression you need at least Python 3.4.
+To use Active Expression you need at least Python 2.7 (earlier version may be supported but not tested) or Python 3.4.
 To install the package, you can run the following command:
 
 ```
+pip install git+https://github.com/active-expressions/active-expressions-static-python
 pip3 install git+https://github.com/active-expressions/active-expressions-static-python
 ```
 
@@ -28,7 +29,7 @@ Afterwards you can use the method `aexpr` in your program.
 For the following example lets assume we have the following class:
 
 ```
-class Example:
+class Example(object):
     def __init__(self):
         self.f = 5
 ```
@@ -75,7 +76,7 @@ Dependencies of an expression are in this case all fields which are used in the 
 **Example** (from the [presentation](https://github.com/active-expressions/active-expressions-static-python/blob/master/presentation/presentation.pdf)):
 
 ```
-class Example:
+class Example(object):
   def __init__(self):
     self.f = 5
     self.g = 10
