@@ -69,5 +69,4 @@ setup(
     #   py_modules=["my_module"],
     #
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    python_requires='>2.0,>3.4'
 )
