@@ -5,11 +5,11 @@ Active Expression Implementation for Python using static-byte-code analysis.
 ## Installation
 
 To use Active Expression you need at least Python 2.7 (earlier version may be supported but not tested) or Python 3.4.
-To install the package, you can run the following command:
+To install the package, you can run one of the following commands:
 
 ```
-pip install git+https://github.com/active-expressions/active-expressions-static-python
-pip3 install git+https://github.com/active-expressions/active-expressions-static-python
+pip install git+https://github.com/active-expressions/active-expressions-static-python # Python 2.x
+pip3 install git+https://github.com/active-expressions/active-expressions-static-python # Python 3.x
 ```
 
 Otherwise you can clone this repository and import the `aexpr.py` file in the subfoler `aexpr`.
